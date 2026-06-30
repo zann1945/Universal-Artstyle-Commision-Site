@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universal Artstyle Commission</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+  :root{
+    --ink:#14110f;
+    --paper:#efe9dd;
+    --paper-deep:#e3dac8;
+    --gold:#c79a44;
+    --gold-bright:#e2b95a;
+    --moss:#2f3b2c;
+    --moss-deep:#1c241a;
+    --line:rgba(20,17,15,0.18);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(199,154,68,0.10), transparent 40%),
+      radial-gradient(circle at 90% 20%, rgba(47,59,44,0.10), transparent 45%);
+    color:var(--ink);
+    font-family:'Space Grotesk', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* texture overlay */
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    pointer-events:none;
+    background-image:repeating-linear-gradient(0deg, rgba(0,0,0,0.018) 0px, rgba(0,0,0,0.018) 1px, transparent 1px, transparent 3px);
+    z-index:1;
+  }
+
+  header{
+    padding:5rem 1.5rem 3rem;
+    text-align:center;
+    position:relative;
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:'Space Grotesk';
+    letter-spacing:.35em;
+    font-size:.68rem;
+    text-transform:uppercase;
+    color:var(--moss);
+    opacity:.75;
+    margin-bottom:1.1rem;
+  }
+  h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size:clamp(2.6rem, 7vw, 5.4rem);
+    margin:0;
+    line-height:0.95;
+    letter-spacing:-0.01em;
+  }
+  h1 em{
+    font-style:italic;
+    color:var(--gold);
+    display:block;
+    font-size:0.55em;
+    margin-top:0.3rem;
+    color:var(--moss);
+  }
+  .intro{
+    max-width:640px;
+    margin:1.8rem auto 0;
+    font-size:1.02rem;
+    line-height:1.6;
+    color:#3a352e;
+  }
+
+  /* CAROUSEL */
+  .gallery-wrap{
+    padding:3.2rem 0;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, transparent, rgba(28,36,26,0.04));
+  }
+  .gallery-label{
+    text-align:center;
+    font-family:'Cormorant Garamond';
+    font-style:italic;
+    font-size:1.3rem;
+    color:var(--moss);
+    margin-bottom:1.6rem;
+  }
+  .carousel{
+    display:flex;
+    gap:1.1rem;
+    overflow-x:auto;
+    padding:0.5rem 6vw 1.6rem;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:thin;
+    scrollbar-color:var(--gold) transparent;
+  }
+  .carousel::-webkit-scrollbar{height:6px;}
+  .carousel::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px;}
+  .carousel img{
+    height:340px;
+    width:auto;
+    flex:0 0 auto;
+    scroll-snap-align:center;
+    border:1px solid var(--line);
+    background:#fff;
+    padding:6px;
+    box-shadow:0 8px 24px rgba(20,17,15,0.18);
+    transition:transform .35s ease, box-shadow .35s ease;
+    cursor:grab;
+  }
+  .carousel img:hover{
+    transform:translateY(-6px) rotate(-0.4deg);
+    box-shadow:0 18px 32px rgba(20,17,15,0.28);
+  }
+
+  /* ARTISTS */
+  .artists{
+    max-width:760px;
+    margin:0 auto;
+    padding:4rem 1.5rem 5rem;
+  }
+  .section-title{
+    text-align:center;
+    font-family:'Cormorant Garamond';
+    font-size:2rem;
+    font-style:italic;
+    margin-bottom:0.4rem;
+  }
+  .section-sub{
+    text-align:center;
+    font-size:.82rem;
+    color:#5b554b;
+    margin-bottom:2.6rem;
+    letter-spacing:.04em;
+  }
+
+  .artist-card{
+    border:1px solid var(--line);
+    background:rgba(255,255,255,0.35);
+    margin-bottom:0.9rem;
+    overflow:hidden;
+    position:relative;
+  }
+  .artist-toggle{
+    width:100%;
+    background:var(--moss-deep);
+    color:var(--paper);
+    border:none;
+    padding:1.1rem 1.4rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'Space Grotesk';
+    font-size:1rem;
+    font-weight:500;
+    cursor:pointer;
+    text-align:left;
+    transition:background .25s ease;
+  }
+  .artist-toggle:hover{background:#283323;}
+  .artist-toggle .num{
+    font-family:'Cormorant Garamond';
+    font-style:italic;
+    color:var(--gold-bright);
+    margin-right:.6rem;
+  }
+  .artist-toggle .arrow{
+    font-size:1.1rem;
+    color:var(--gold-bright);
+    transition:transform .3s ease;
+  }
+  .artist-card.open .arrow{transform:rotate(90deg);}
+
+  .panel{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .4s ease;
+    background:var(--paper-deep);
+  }
+  .artist-card.open .panel{max-height:600px;}
+  .panel-inner{
+    padding:1.4rem 1.4rem 1.6rem;
+  }
+
+  .price-block{
+    font-size:.95rem;
+    line-height:1.7;
+    color:#2a261f;
+    white-space:pre-line;
+    border-left:2px solid var(--gold);
+    padding-left:1rem;
+    margin-bottom:1.1rem;
+  }
+  .next-btn, .back-btn{
+    font-family:'Space Grotesk';
+    font-size:.82rem;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    background:var(--gold);
+    color:var(--moss-deep);
+    border:none;
+    padding:.65rem 1.3rem;
+    cursor:pointer;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .next-btn:hover, .back-btn:hover{background:var(--gold-bright); transform:translateY(-2px);}
+  .back-btn{
+    background:transparent;
+    border:1px solid var(--moss);
+    color:var(--moss);
+    margin-top:.9rem;
+  }
+  .back-btn:hover{background:var(--moss); color:var(--paper);}
+
+  .phone-block{
+    font-family:'Cormorant Garamond';
+    font-size:1.6rem;
+    font-style:italic;
+    color:var(--moss-deep);
+    margin-bottom:0.9rem;
+  }
+  .phone-block a{ color:inherit; text-decoration:none; border-bottom:1px solid var(--gold); }
+
+  .stage{ display:none; }
+  .stage.active{ display:block; }
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:3rem 1.5rem 2.4rem;
+    text-align:center;
+  }
+  .community-note{
+    font-family:'Cormorant Garamond';
+    font-style:italic;
+    font-size:1.15rem;
+    color:var(--moss);
+    margin-bottom:1.6rem;
+  }
+  .links-row{
+    font-size:.75rem;
+    letter-spacing:.03em;
+    color:#5b554b;
+    margin-bottom:1.4rem;
+    line-height:1.8;
+  }
+  .support-note{
+    font-size:.72rem;
+    color:#6b6457;
+    max-width:420px;
+    margin:0 auto;
+    line-height:1.6;
+    border-top:1px dashed var(--line);
+    padding-top:1.2rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">a gallery of commissioned hands</div>
+  <h1>Universal Artstyle <em>Commission</em></h1>
+  <p class="intro">Selamat datang di site Universal Artstyle Commision, silahkan hubungi salah satu dari mereka jika kamu ingin memesan komisi art!</p>
+</header>
+
+<section class="gallery-wrap">
+  <div class="gallery-label">— geser untuk melihat karya —</div>
+  <div class="carousel" id="carousel">
+    <img src="images/1000358425.png" alt="artwork">
+    <img src="images/1000361024.jpg" alt="artwork">
+    <img src="images/1000360826.jpg" alt="artwork">
+    <img src="images/1000360814.jpg" alt="artwork">
+    <img src="images/1000360509.png" alt="artwork">
+    <img src="images/1000360739.jpg" alt="artwork">
+    <img src="images/1000360827.jpg" alt="artwork">
+    <img src="images/1000360736.jpg" alt="artwork">
+    <img src="images/1000360855.jpg" alt="artwork">
+    <img src="images/1000360820.jpg" alt="artwork">
+  </div>
+</section>
+
+<section class="artists">
+  <div class="section-title">Para Artist</div>
+  <div class="section-sub">tekan nama untuk melihat harga, lalu nomor kontak</div>
+
+  <div id="artist-list"></div>
+</section>
+
+<footer>
+  <div class="community-note">Universal Artstyle, salah satu komunitas besar di Indonesia,<br>sudah lebih dari 500+ orang pernah bergabung.</div>
+  <div class="links-row">
+    Universal Artstyle Commision Site &nbsp;|&nbsp; Universal Artstyle Academy &nbsp;|&nbsp; Universal Artstyle Provinces<br>
+    VCN by Universal Artstyle &nbsp;|&nbsp; DXPB by Universal Artstyle
+  </div>
+  <div class="support-note">Dukung website ini agar rajin di-update dengan cara menyumbangkan sedikit uang kalian ke atmin — Dana / Gopay / Ovo : 083157118553</div>
+</footer>
+
+<script>
+const artists = [
+  {
+    name:"Alvn",
+    price:"Start from 40k (IDR)",
+    phone:"+62 853 7383 2195"
+  },
+  {
+    name:"Mai",
+    price:"Headshot : 40k\nHalf body : 70k\nCouple : discount 30%",
+    phone:"0895-4180-17239"
+  },
+  {
+    name:"Rin Commission",
+    price:"50k – 80k",
+    phone:"0895406713993"
+  },
+  {
+    name:"Senn",
+    price:"75k – 350k",
+    phone:"088991853732"
+  },
+  {
+    name:"Joelly Commission (Jopiewpiew_ta)",
+    price:"Start from 70k",
+    phone:"081460402409"
+  },
+  {
+    name:"Ninaeyo Comms",
+    price:"Range 70k – 160k (IDR)",
+    phone:"083875566761"
+  },
+  {
+    name:"Kiworu",
+    price:"Personal use : 55k – 150k\nCommercial use : 100% dari total harga",
+    phone:"085726839875"
+  },
+  {
+    name:"Nura Ki",
+    price:"10k – 45k (tergantung)",
+    phone:"083157118553"
+  }
+];
+
+const list = document.getElementById('artist-list');
+
+artists.forEach((a, i) => {
+  const card = document.createElement('div');
+  card.className = 'artist-card';
+
+  card.innerHTML = `
+    <button class="artist-toggle">
+      <span><span class="num">${String(i+1).padStart(2,'0')}</span>${a.name}</span>
+      <span class="arrow">›</span>
+    </button>
+    <div class="panel">
+      <div class="panel-inner">
+
+        <div class="stage stage-price active">
+          <div class="price-block">${a.price}</div>
+          <button class="next-btn">Lihat Nomor HP</button>
+        </div>
+
+        <div class="stage stage-phone">
+          <div class="phone-block"><a href="tel:${a.phone.replace(/[^0-9+]/g,'')}">${a.phone}</a></div>
+          <button class="back-btn">‹ Kembali</button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  const toggle = card.querySelector('.artist-toggle');
+  const pricePanel = card.querySelector('.stage-price');
+  const phonePanel = card.querySelector('.stage-phone');
+  const nextBtn = card.querySelector('.next-btn');
+  const backBtn = card.querySelector('.back-btn');
+
+  toggle.addEventListener('click', () => {
+    document.querySelectorAll('.artist-card').forEach(c => {
+      if(c !== card) c.classList.remove('open');
+    });
+    card.classList.toggle('open');
+  });
+
+  nextBtn.addEventListener('click', () => {
+    pricePanel.classList.remove('active');
+    phonePanel.classList.add('active');
+  });
+
+  backBtn.addEventListener('click', () => {
+    phonePanel.classList.remove('active');
+    pricePanel.classList.add('active');
+  });
+
+  list.appendChild(card);
+});
+</script>
+
+</body>
+</html>
